@@ -222,6 +222,7 @@ namespace CefBrowserTool
             this.indexingRadioButton.TabStop = true;
             this.indexingRadioButton.Text = "Indexing Validation";
             this.indexingRadioButton.UseVisualStyleBackColor = true;
+            this.indexingRadioButton.CheckedChanged += new System.EventHandler(this.indexingRadioButton_CheckedChanged);
             this.indexingRadioButton.Click += new System.EventHandler(this.indexingRadioButton_Clicked);
             // 
             // redactionRadioButton
@@ -234,6 +235,7 @@ namespace CefBrowserTool
             this.redactionRadioButton.TabStop = true;
             this.redactionRadioButton.Text = "Redaction Validation";
             this.redactionRadioButton.UseVisualStyleBackColor = true;
+            this.redactionRadioButton.CheckedChanged += new System.EventHandler(this.redactionRadioButton_CheckedChanged);
             this.redactionRadioButton.Click += new System.EventHandler(this.redactionRadioButton_Clicked);
             // 
             // label5

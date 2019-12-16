@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
@@ -20,8 +21,9 @@ namespace CefBrowserTool
     public partial class Form1 : Form
     {
         public ChromiumWebBrowser chromeBrowser;
-        string defaultURL = $"http://{Environment.MachineName}:8037/"; 
-
+        string defaultURL = $"http://{Environment.MachineName}:8037/";
+        private string mode = "indexing";
+        
         public Form1()
         {
             InitializeComponent();
@@ -76,7 +78,12 @@ namespace CefBrowserTool
 
             var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
-            using (var client = new WebClient { UseDefaultCredentials = true })
+            IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
+            defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
+            using (var client = new WebClient { 
+                UseDefaultCredentials = true,
+                Proxy = defaultWebProxy
+            })
             {
                 try
                 {
@@ -132,7 +139,13 @@ namespace CefBrowserTool
             // set useCredentials to be true, will pass windows credentials for web api verification
 
 
-            using (var client = new WebClient { UseDefaultCredentials = true })
+            IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
+            defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
+            using (var client = new WebClient
+            {
+                UseDefaultCredentials = true,
+                Proxy = defaultWebProxy
+            })
             {
                 try
                 {
@@ -212,14 +225,20 @@ namespace CefBrowserTool
                 batchIdList.Add(batchID);
             }
 
-
+           
             var batchIdUrl = "";
             foreach (var batchId in batchIdList)
             {
                 batchIdUrl += $"batchIds={batchId}";
             }
 
-            using (var client = new WebClient())
+            IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
+            defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
+            using (var client = new WebClient
+            {
+                UseDefaultCredentials = true,
+                Proxy = defaultWebProxy
+            })
             {
                 try
                 {
@@ -306,14 +325,45 @@ namespace CefBrowserTool
         
         private void indexingRadioButton_Clicked(object sender, EventArgs e)
         {
+
             if (indexingRadioButton.Checked) redactionRadioButton.Checked = false;
-            else redactionRadioButton.Checked = true;
+            else {
+                redactionRadioButton.Checked = true;
+            }
+
+            if (mode != "indexing")
+            {
+               
+                mode = "indexing";
+            }
+            else
+            {
+                buttonLoad.Enabled = true;
+                buttonSuspend.Enabled = true;
+                buttonClose.Enabled = true;
+            }
+            
         }
 
         private void redactionRadioButton_Clicked(object sender, EventArgs e)
         {
             if (redactionRadioButton.Checked) indexingRadioButton.Checked = false;
-            else indexingRadioButton.Checked = true;
+            else
+            {
+                indexingRadioButton.Checked = true;
+            }
+
+            if (mode != "redaction")
+            {
+
+                mode = "redaction";
+            }
+            else
+            {
+                buttonLoad.Enabled = true;
+                buttonSuspend.Enabled = true;
+                buttonClose.Enabled = true;
+            }
 
         }
 
@@ -337,7 +387,13 @@ namespace CefBrowserTool
             // set useCredentials to be true, will pass windows credentials for web api verification
 
 
-            using (var client = new WebClient { UseDefaultCredentials = true })
+            IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
+            defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
+            using (var client = new WebClient
+            {
+                UseDefaultCredentials = true,
+                Proxy = defaultWebProxy
+            })
             {
                 try
                 {
@@ -385,7 +441,13 @@ namespace CefBrowserTool
             var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
-            using (var client = new WebClient { UseDefaultCredentials = true })
+            IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
+            defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
+            using (var client = new WebClient
+            {
+                UseDefaultCredentials = true,
+                Proxy = defaultWebProxy
+            })
             {
                 try
                 {
@@ -479,5 +541,14 @@ namespace CefBrowserTool
 
         #endregion
 
+        private void indexingRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void redactionRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
