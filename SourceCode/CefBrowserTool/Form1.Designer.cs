@@ -54,8 +54,6 @@ namespace CefBrowserTool
             this.closeBatchRedactionButton = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.textBoxServer = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -129,11 +127,11 @@ namespace CefBrowserTool
             // labelUrl
             // 
             this.labelUrl.AutoSize = true;
-            this.labelUrl.Location = new System.Drawing.Point(13, 12);
+            this.labelUrl.Location = new System.Drawing.Point(23, 12);
             this.labelUrl.Name = "labelUrl";
-            this.labelUrl.Size = new System.Drawing.Size(59, 13);
+            this.labelUrl.Size = new System.Drawing.Size(51, 13);
             this.labelUrl.TabIndex = 5;
-            this.labelUrl.Text = "Api Server:";
+            this.labelUrl.Text = "Enter Url:";
             // 
             // labelNotice
             // 
@@ -163,7 +161,7 @@ namespace CefBrowserTool
             // DocumentListBox
             // 
             this.DocumentListBox.FormattingEnabled = true;
-            this.DocumentListBox.Location = new System.Drawing.Point(23, 172);
+            this.DocumentListBox.Location = new System.Drawing.Point(23, 158);
             this.DocumentListBox.Name = "DocumentListBox";
             this.DocumentListBox.Size = new System.Drawing.Size(281, 615);
             this.DocumentListBox.TabIndex = 10;
@@ -171,7 +169,7 @@ namespace CefBrowserTool
             // 
             // batchIDTextBox
             // 
-            this.batchIDTextBox.Location = new System.Drawing.Point(80, 67);
+            this.batchIDTextBox.Location = new System.Drawing.Point(80, 37);
             this.batchIDTextBox.Name = "batchIDTextBox";
             this.batchIDTextBox.Size = new System.Drawing.Size(224, 20);
             this.batchIDTextBox.TabIndex = 11;
@@ -179,7 +177,7 @@ namespace CefBrowserTool
             // 
             // retrieveBatchDocsButton
             // 
-            this.retrieveBatchDocsButton.Location = new System.Drawing.Point(24, 124);
+            this.retrieveBatchDocsButton.Location = new System.Drawing.Point(24, 106);
             this.retrieveBatchDocsButton.Name = "retrieveBatchDocsButton";
             this.retrieveBatchDocsButton.Size = new System.Drawing.Size(75, 21);
             this.retrieveBatchDocsButton.TabIndex = 12;
@@ -189,7 +187,7 @@ namespace CefBrowserTool
             // 
             // apiKeyTextBox
             // 
-            this.apiKeyTextBox.Location = new System.Drawing.Point(80, 96);
+            this.apiKeyTextBox.Location = new System.Drawing.Point(80, 66);
             this.apiKeyTextBox.Name = "apiKeyTextBox";
             this.apiKeyTextBox.Size = new System.Drawing.Size(224, 20);
             this.apiKeyTextBox.TabIndex = 13;
@@ -197,7 +195,7 @@ namespace CefBrowserTool
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 99);
+            this.label2.Location = new System.Drawing.Point(23, 69);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(46, 13);
             this.label2.TabIndex = 14;
@@ -206,7 +204,7 @@ namespace CefBrowserTool
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 71);
+            this.label4.Location = new System.Drawing.Point(23, 40);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 15;
@@ -243,7 +241,7 @@ namespace CefBrowserTool
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 158);
+            this.label5.Location = new System.Drawing.Point(23, 144);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(229, 13);
             this.label5.TabIndex = 16;
@@ -287,29 +285,11 @@ namespace CefBrowserTool
             this.label7.TabIndex = 20;
             this.label7.Text = "Note: this tool uses logged on windows user for server authentication. ";
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(13, 41);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 13);
-            this.label8.TabIndex = 22;
-            this.label8.Text = "App Server:";
-            // 
-            // textBoxServer
-            // 
-            this.textBoxServer.Location = new System.Drawing.Point(80, 38);
-            this.textBoxServer.Name = "textBoxServer";
-            this.textBoxServer.Size = new System.Drawing.Size(224, 20);
-            this.textBoxServer.TabIndex = 21;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1303, 889);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.textBoxServer);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.closeBatchRedactionButton);
@@ -370,8 +350,6 @@ namespace CefBrowserTool
         private Button closeBatchRedactionButton;
         private Label label6;
         private Label label7;
-        private Label label8;
-        private TextBox textBoxServer;
     }
 }
 
