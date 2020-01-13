@@ -249,6 +249,7 @@ namespace CefBrowserTool
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     client.Headers.Add("api_key", apiKeyTextBox.Text);
+                    textBoxResponse.Text = $"http://{server}:8037/api/Batch/Status?" + batchIdUrl;
                     var json = client.DownloadString($"http://{server}:8037/api/Batch/Status?" + batchIdUrl);
 
                     //json = 
@@ -265,7 +266,7 @@ namespace CefBrowserTool
                         }
                     }
                     DocumentListBox.DataSource = intellidactids;
-                    textBoxResponse.Text = $"Open batch call returned, document listbox populated with {intellidactids.Count} item(s).";
+                    textBoxResponse.Text += $"Open batch call returned, document listbox populated with {intellidactids.Count} item(s).";
 
                 }
                 catch (WebException exception)
@@ -311,15 +312,17 @@ namespace CefBrowserTool
             // loading document, it will put a document lock by the current user. The lock will be released after user suspend or close the document 
 
             var server = parseServerName(txtURL.Text);
+            server = string.IsNullOrWhiteSpace(textBoxServer.Text) ? server : parseServerName(textBoxServer.Text);
+            //server = string.IsNullOrWhiteSpace()
             var service = indexingRadioButton.Checked ? "indexing" : "redaction";
             var port = indexingRadioButton.Checked ? "8030" : "8060";
-            
             var url = $"http://{server}:{port}/" + service + "/document/" + txtIntellidactId.Text;
+            textBoxResponse.Text = url;
             chromeBrowser.Load(url);
             buttonLoad.Enabled = false;
             buttonSuspend.Enabled = true;
             buttonClose.Enabled = true;
-            textBoxResponse.Text = "Loading document... From Url: " + url;
+            textBoxResponse.Text += "Loading document... From Url: " + url;
             //textBoxResponse.Text = webview.IsReady.ToString();
         }
         
@@ -400,9 +403,11 @@ namespace CefBrowserTool
 
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
+                    textBoxResponse.Text = $"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+
                     var response =
                         client.UploadData($"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}", "POST", new byte[0]);
-                    textBoxResponse.Text = BytesToStringConverted(response);
+                    textBoxResponse.Text += BytesToStringConverted(response);
                 }
                 catch (WebException exception)
                 {
@@ -419,7 +424,7 @@ namespace CefBrowserTool
                         }
                     }
 
-                    textBoxResponse.Text = $"Failed to close batch in indexing module, " + responseText;
+                    textBoxResponse.Text += $"Failed to close batch in indexing module, " + responseText;
                 }
             }
         }
@@ -456,7 +461,8 @@ namespace CefBrowserTool
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
                         client.UploadData($"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}", "POST", new byte[0]);
-                    textBoxResponse.Text = BytesToStringConverted(response);
+                    textBoxResponse.Text = $"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+                    textBoxResponse.Text += BytesToStringConverted(response);
                 }
                 catch (WebException exception)
                 {
@@ -471,7 +477,7 @@ namespace CefBrowserTool
                         }
                     }
 
-                    textBoxResponse.Text = $"Failed to close batch in redaction module, " + responseText;
+                    textBoxResponse.Text += $"Failed to close batch in redaction module, " + responseText;
                 }
             }
         }
@@ -550,5 +556,6 @@ namespace CefBrowserTool
         {
 
         }
+
     }
 }
