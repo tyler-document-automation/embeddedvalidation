@@ -21,14 +21,15 @@ namespace CefBrowserTool
     public partial class Form1 : Form
     {
         public ChromiumWebBrowser chromeBrowser;
-        string defaultURL = $"http://{Environment.MachineName}:8037/";
+        string defaultURL = $"{Environment.MachineName}";
         private string mode = "indexing";
-        
+
         public Form1()
         {
             InitializeComponent();
             InitializeChromium();
             txtURL.Text = defaultURL;
+            textBoxServer.Text = defaultURL;
 
         }
 
@@ -36,7 +37,7 @@ namespace CefBrowserTool
         {
             //textBoxResponse.Text = "Finished loading document";
         }
-       
+
         private void buttonLoad_Click(object sender, EventArgs e)
         {
             // loading document, it will put a document lock by the current user. The lock will be released after user suspend or close the document 
@@ -45,6 +46,7 @@ namespace CefBrowserTool
                 textBoxResponse.Text = "Please provide one service type, select indexing validation or redaction";
                 return;
             }
+
             LoadDocument();
         }
 
@@ -69,18 +71,29 @@ namespace CefBrowserTool
                 textBoxResponse.Text = "Please provide one service type, select indexing validation or redaction";
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(textBoxServer.Text))
+            {
+                textBoxResponse.Text = "Please specify the server name where the front end web app (WIV, RV) is hosted";
+                return;
+            }
+
             buttonLoad.Enabled = true;
             buttonSuspend.Enabled = false;
             buttonClose.Enabled = false;
             var server = parseServerName(txtURL.Text);
+            var appServer = parseServerName(textBoxServer.Text);
+
             var serviceType = indexingRadioButton.Checked ? "indexing" : "redaction";
             var port = indexingRadioButton.Checked ? "8030" : "8060";
-
-            var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
+            var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
+            var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
+            var appBaseUrl = $"http://{appServer}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
             IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
             defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
-            using (var client = new WebClient { 
+            using (var client = new WebClient
+            {
                 UseDefaultCredentials = true,
                 Proxy = defaultWebProxy
             })
@@ -90,14 +103,17 @@ namespace CefBrowserTool
                     // make suspend document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
-                        client.UploadData($"http://{server}:8037/api/validation/{serviceType}/document/suspend/{txtIntellidactId.Text}", "POST", new byte[0]);
+                        client.UploadData(
+                            $"http://{serverUrl}/api/validation/{serviceType}/document/suspend/{txtIntellidactId.Text}",
+                            "POST", new byte[0]);
                     WebHeaderCollection myWebHeaderCollection = client.ResponseHeaders;
                     var header = myWebHeaderCollection == null ? null : myWebHeaderCollection["x-validation-status"];
 
-                    textBoxResponse.Text = $"x-validation-status: {header}. Document suspended successfully, " + BytesToStringConverted(response);
+                    textBoxResponse.Text = $"x-validation-status: {header}. Document suspended successfully, " +
+                                           BytesToStringConverted(response);
                     // redirect to suspend page
                     chromeBrowser.Load(appBaseUrl + "/status/" + "Suspended");
-                    
+
                 }
                 catch (WebException exception)
                 {
@@ -111,6 +127,7 @@ namespace CefBrowserTool
                             responseText = reader.ReadToEnd();
                         }
                     }
+
                     WebHeaderCollection myWebHeaderCollection = client.ResponseHeaders;
                     var header = myWebHeaderCollection == null ? null : myWebHeaderCollection["x-validation-error"];
                     textBoxResponse.Text = $"x-validation-error: {header}. Failed to suspend document, " + responseText;
@@ -128,14 +145,23 @@ namespace CefBrowserTool
                 textBoxResponse.Text = "Please provide one service type, select indexing validation or redaction";
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(textBoxServer.Text))
+            {
+                textBoxResponse.Text = "Please specify the server name where the front end web app (WIV, RV) is hosted";
+                return;
+            }
+
             buttonLoad.Enabled = true;
             buttonSuspend.Enabled = false;
             buttonClose.Enabled = false;
             var server = parseServerName(txtURL.Text);
+            var appServer = parseServerName(textBoxServer.Text);
             var serviceType = indexingRadioButton.Checked ? "indexing" : "redaction";
             var port = indexingRadioButton.Checked ? "8030" : "8060";
-
-            var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
+            var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
+            var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
+            var appBaseUrl = $"http://{appServer}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
 
@@ -153,11 +179,14 @@ namespace CefBrowserTool
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
-                        client.UploadData($"http://{server}:8037/api/validation/{serviceType}/document/close/{txtIntellidactId.Text}", "POST", new byte[0]);
+                        client.UploadData(
+                            $"http://{serverUrl}/api/validation/{serviceType}/document/close/{txtIntellidactId.Text}",
+                            "POST", new byte[0]);
                     WebHeaderCollection myWebHeaderCollection = client.ResponseHeaders;
                     var header = myWebHeaderCollection == null ? null : myWebHeaderCollection["x-validation-status"];
 
-                    textBoxResponse.Text = $"x-validation-status: {header}. Document closed successfully, " + BytesToStringConverted(response);
+                    textBoxResponse.Text = $"x-validation-status: {header}. Document closed successfully, " +
+                                           BytesToStringConverted(response);
                     // redirect to close page
                     chromeBrowser.Load(appBaseUrl + "/status/" + "Closed");
                 }
@@ -186,7 +215,7 @@ namespace CefBrowserTool
         }
 
         // convert bytes to string
-        
+
         private void txtURL_TextChanged(object sender, EventArgs e)
         {
             buttonLoad.Enabled = true;
@@ -196,7 +225,7 @@ namespace CefBrowserTool
         {
             buttonLoad.Enabled = true;
 
-        }       
+        }
 
         private void batchIDTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -225,7 +254,7 @@ namespace CefBrowserTool
                 batchIdList.Add(batchID);
             }
 
-           
+
             var batchIdUrl = "";
             foreach (var batchId in batchIdList)
             {
@@ -243,14 +272,16 @@ namespace CefBrowserTool
                 try
                 {
                     var server = parseServerName(txtURL.Text);
+                    var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
+                    var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
                     //var serviceType = parseServiceType(txtURL.Text);
                     var serviceType = indexingRadioButton.Checked ? "indexing" : "redaction";
 
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     client.Headers.Add("api_key", apiKeyTextBox.Text);
-                    textBoxResponse.Text = $"http://{server}:8037/api/Batch/Status?" + batchIdUrl;
-                    var json = client.DownloadString($"http://{server}:8037/api/Batch/Status?" + batchIdUrl);
+                    textBoxResponse.Text = $"http://{serverUrl}/api/Batch/Status?" + batchIdUrl;
+                    var json = client.DownloadString($"http://{serverUrl}/api/Batch/Status?" + batchIdUrl);
 
                     //json = 
                     JArray jsonArray = JArray.Parse(json);
@@ -265,8 +296,10 @@ namespace CefBrowserTool
                             intellidactids.Add(fileName);
                         }
                     }
+
                     DocumentListBox.DataSource = intellidactids;
-                    textBoxResponse.Text += $"Open batch call returned, document listbox populated with {intellidactids.Count} item(s).";
+                    textBoxResponse.Text +=
+                        $"Open batch call returned, document listbox populated with {intellidactids.Count} item(s).";
 
                 }
                 catch (WebException exception)
@@ -292,6 +325,7 @@ namespace CefBrowserTool
                 textBoxResponse.Text = "Please provide one service type, select indexing validation or redaction";
                 return;
             }
+
             LoadDocument();
         }
 
@@ -299,24 +333,35 @@ namespace CefBrowserTool
         {
             if (String.IsNullOrEmpty(txtIntellidactId.Text))
             {
-                textBoxResponse.Text = "IntellidactId is not provided. Please double click on document item in the document list to load.";
+                textBoxResponse.Text =
+                    "IntellidactId is not provided. Please double click on document item in the document list to load.";
                 return;
-            };
+            }
 
-            chromeBrowser.ShowDevTools();
+            ;
+            if (string.IsNullOrWhiteSpace(textBoxServer.Text))
+            {
+                textBoxResponse.Text = "Please specify the server name where the front end web app (WIV, RV) is hosted";
+                return;
+            }
+
             if (!isValidationTypeSelected())
             {
                 textBoxResponse.Text = "Please provide one service type, select indexing validation or redaction";
                 return;
             }
+
             // loading document, it will put a document lock by the current user. The lock will be released after user suspend or close the document 
+            //chromeBrowser.ShowDevTools();
 
             var server = parseServerName(txtURL.Text);
-            server = string.IsNullOrWhiteSpace(textBoxServer.Text) ? server : parseServerName(textBoxServer.Text);
+            //server = string.IsNullOrWhiteSpace(textBoxServer.Text);
+            var appServer = parseServerName(textBoxServer.Text);
+
             //server = string.IsNullOrWhiteSpace()
             var service = indexingRadioButton.Checked ? "indexing" : "redaction";
             var port = indexingRadioButton.Checked ? "8030" : "8060";
-            var url = $"http://{server}:{port}/" + service + "/document/" + txtIntellidactId.Text;
+            var url = $"http://{appServer}:{port}/" + service + "/document/" + txtIntellidactId.Text;
             textBoxResponse.Text = url;
             chromeBrowser.Load(url);
             buttonLoad.Enabled = false;
@@ -325,18 +370,19 @@ namespace CefBrowserTool
             textBoxResponse.Text += "Loading document... From Url: " + url;
             //textBoxResponse.Text = webview.IsReady.ToString();
         }
-        
+
         private void indexingRadioButton_Clicked(object sender, EventArgs e)
         {
 
             if (indexingRadioButton.Checked) redactionRadioButton.Checked = false;
-            else {
+            else
+            {
                 redactionRadioButton.Checked = true;
             }
 
             if (mode != "indexing")
             {
-               
+
                 mode = "indexing";
             }
             else
@@ -345,7 +391,7 @@ namespace CefBrowserTool
                 buttonSuspend.Enabled = true;
                 buttonClose.Enabled = true;
             }
-            
+
         }
 
         private void redactionRadioButton_Clicked(object sender, EventArgs e)
@@ -378,15 +424,20 @@ namespace CefBrowserTool
             {
                 textBoxResponse.Text = "Batch Id is not provided.";
                 return;
-            };
+            }
+
+            ;
             buttonLoad.Enabled = true;
             buttonSuspend.Enabled = false;
             buttonClose.Enabled = false;
             var server = parseServerName(txtURL.Text);
+            var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
+            var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
             var serviceType = "indexing";
             var port = "8030";
+            var appServer = parseServerName(textBoxServer.Text);
 
-            var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
+            var appBaseUrl = $"http://{appServer}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
 
@@ -403,10 +454,13 @@ namespace CefBrowserTool
 
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
-                    textBoxResponse.Text = $"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+                    textBoxResponse.Text =
+                        $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
 
                     var response =
-                        client.UploadData($"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}", "POST", new byte[0]);
+                        client.UploadData(
+                            $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}",
+                            "POST", new byte[0]);
                     textBoxResponse.Text += BytesToStringConverted(response);
                 }
                 catch (WebException exception)
@@ -424,7 +478,7 @@ namespace CefBrowserTool
                         }
                     }
 
-                    textBoxResponse.Text += $"Failed to close batch in indexing module, " + responseText;
+                    textBoxResponse.Text = $"Failed to close batch in indexing module, " + responseText;
                 }
             }
         }
@@ -435,14 +489,18 @@ namespace CefBrowserTool
             {
                 textBoxResponse.Text = "Batch Id is not provided.";
                 return;
-            };
+            }
+
+            ;
             buttonLoad.Enabled = true;
             buttonSuspend.Enabled = false;
             buttonClose.Enabled = false;
             var server = parseServerName(txtURL.Text);
             var serviceType = "redaction";
             var port = "8060";
-
+            var appServer = parseServerName(textBoxServer.Text);
+            var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
+            var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
             var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
@@ -460,8 +518,11 @@ namespace CefBrowserTool
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
-                        client.UploadData($"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}", "POST", new byte[0]);
-                    textBoxResponse.Text = $"http://{server}:8037/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+                        client.UploadData(
+                            $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}",
+                            "POST", new byte[0]);
+                    textBoxResponse.Text =
+                        $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
                     textBoxResponse.Text += BytesToStringConverted(response);
                 }
                 catch (WebException exception)
@@ -476,7 +537,8 @@ namespace CefBrowserTool
                             responseText = reader.ReadToEnd();
                         }
                     }
-
+                    textBoxResponse.Text =
+                        $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
                     textBoxResponse.Text += $"Failed to close batch in redaction module, " + responseText;
                 }
             }
@@ -489,6 +551,7 @@ namespace CefBrowserTool
 
 
         #region Utility Method
+
         private static string BytesToStringConverted(byte[] bytes)
         {
             using (var stream = new MemoryStream(bytes))
@@ -532,17 +595,20 @@ namespace CefBrowserTool
             {
                 return "indexing";
             }
+
             if (url.Contains("/redaction/"))
             {
                 return "redaction";
             }
+
             return "";
         }
 
 
         private bool isValidationTypeSelected()
         {
-            return indexingRadioButton.Checked && !redactionRadioButton.Checked || !indexingRadioButton.Checked && redactionRadioButton.Checked;
+            return indexingRadioButton.Checked && !redactionRadioButton.Checked ||
+                   !indexingRadioButton.Checked && redactionRadioButton.Checked;
         }
 
         #endregion
@@ -557,5 +623,84 @@ namespace CefBrowserTool
 
         }
 
+        private void textBoxServer_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonRebuildCP_Click(object sender, EventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Filter = "Image Files (*.tif, *.pdf)|*.tif; *.pdf|All Files|*.*",
+                Multiselect = false
+            };
+
+            // Show open file dialog box
+            var result = dlg.ShowDialog();
+            // Process open file dialog box results
+            if (result == DialogResult.OK)
+            {
+                var fileName = Path.GetFileName(dlg.FileName);
+                var server = parseServerName(txtURL.Text);
+                var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
+                var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
+                var serviceType = indexingRadioButton.Checked ? "indexing" : "redaction";
+                var port = indexingRadioButton.Checked ? "8030" : "8060";
+
+                var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
+                // set useCredentials to be true, will pass windows credentials for web api verification
+                IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
+                defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
+                using (var client = new WebClient
+                {
+                    UseDefaultCredentials = true,
+                    Proxy = defaultWebProxy
+                })
+                {
+                    try
+                    {
+                        // make suspend document web api call to release document lock
+                        client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
+                        byte[] bytes = System.IO.File.ReadAllBytes(dlg.FileName);
+
+                        //var response =
+                        //    client.UploadData(
+                        //        $"http://{serverUrl}/ api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
+                        //        "POST", new byte[0]);
+                        var response =
+                            client.UploadFile(
+                                $"http://{serverUrl}/api/document/rebuildCoverPages/{txtIntellidactId.Text}", "POST",
+                                dlg.FileName);
+                        textBoxResponse.Text =
+                            $"http://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
+                        textBoxResponse.Text += BytesToStringConverted(response);
+                    }
+                    catch (WebException exception)
+                    {
+
+                        string responseText = null;
+                        var responseStream = exception.Response?.GetResponseStream();
+                        if (responseStream != null)
+                        {
+                            using (var reader = new StreamReader(responseStream))
+                            {
+                                responseText = reader.ReadToEnd();
+                            }
+                        }
+                        textBoxResponse.Text =
+                            $"http://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
+                        textBoxResponse.Text += $"Failed to rebuild cover pages, " + responseText;
+                    }
+                }
+            }
+
+            
+        }
     }
 }
