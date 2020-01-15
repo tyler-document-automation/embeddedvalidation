@@ -668,18 +668,29 @@ namespace CefBrowserTool
                         // make suspend document web api call to release document lock
                         client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                         byte[] bytes = System.IO.File.ReadAllBytes(dlg.FileName);
+                        String file = Convert.ToBase64String(bytes);
+
+                        var body = new
+                        {
+                            content = file
+                        };
+                        string json = Newtonsoft.Json.JsonConvert.SerializeObject(body);
 
                         //var response =
                         //    client.UploadData(
-                        //        $"http://{serverUrl}/ api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
+                        //        $"http://{serverUrl}/api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
                         //        "POST", new byte[0]);
                         var response =
-                            client.UploadFile(
-                                $"http://{serverUrl}/api/document/rebuildCoverPages/{txtIntellidactId.Text}", "POST",
-                                dlg.FileName);
+                            client.UploadString(
+                                $"http://{serverUrl}/api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
+                                "POST", json);
+                        //var response =
+                        //    client.UploadFile(
+                        //        $"http://{serverUrl}/api/document/rebuildCoverPages/{txtIntellidactId.Text}", "POST",
+                        //        dlg.FileName);
                         textBoxResponse.Text =
                             $"http://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
-                        textBoxResponse.Text += BytesToStringConverted(response);
+                        textBoxResponse.Text += response;
                     }
                     catch (WebException exception)
                     {
@@ -701,6 +712,11 @@ namespace CefBrowserTool
             }
 
             
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            chromeBrowser.ShowDevTools();
         }
     }
 }

@@ -57,6 +57,7 @@ namespace CefBrowserTool
             this.label8 = new System.Windows.Forms.Label();
             this.textBoxServer = new System.Windows.Forms.TextBox();
             this.buttonRebuildCP = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -158,7 +159,7 @@ namespace CefBrowserTool
             // 
             this.textBoxResponse.Location = new System.Drawing.Point(434, 36);
             this.textBoxResponse.Name = "textBoxResponse";
-            this.textBoxResponse.Size = new System.Drawing.Size(915, 20);
+            this.textBoxResponse.Size = new System.Drawing.Size(838, 20);
             this.textBoxResponse.TabIndex = 8;
             // 
             // DocumentListBox
@@ -315,11 +316,22 @@ namespace CefBrowserTool
             this.buttonRebuildCP.UseVisualStyleBackColor = true;
             this.buttonRebuildCP.Click += new System.EventHandler(this.buttonRebuildCP_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(1279, 35);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(70, 21);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "DevTools";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1361, 892);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.buttonRebuildCP);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.textBoxServer);
@@ -386,6 +398,7 @@ namespace CefBrowserTool
         private Label label8;
         private TextBox textBoxServer;
         private Button buttonRebuildCP;
+        private Button button1;
     }
 }
 
