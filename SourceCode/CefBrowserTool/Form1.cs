@@ -88,7 +88,7 @@ namespace CefBrowserTool
             var port = indexingRadioButton.Checked ? "8030" : "8060";
             var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
             var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
-            var appBaseUrl = $"http://{appServer}:{port}/" + serviceType + "/document";
+            var appBaseUrl = $"https://{appServer}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
             IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
             defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
@@ -104,7 +104,7 @@ namespace CefBrowserTool
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
                         client.UploadData(
-                            $"http://{serverUrl}/api/validation/{serviceType}/document/suspend/{txtIntellidactId.Text}",
+                            $"https://{serverUrl}/api/validation/{serviceType}/document/suspend/{txtIntellidactId.Text}",
                             "POST", new byte[0]);
                     WebHeaderCollection myWebHeaderCollection = client.ResponseHeaders;
                     var header = myWebHeaderCollection == null ? null : myWebHeaderCollection["x-validation-status"];
@@ -161,7 +161,7 @@ namespace CefBrowserTool
             var port = indexingRadioButton.Checked ? "8030" : "8060";
             var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
             var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
-            var appBaseUrl = $"http://{appServer}:{port}/" + serviceType + "/document";
+            var appBaseUrl = $"https://{appServer}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
 
@@ -180,7 +180,7 @@ namespace CefBrowserTool
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
                         client.UploadData(
-                            $"http://{serverUrl}/api/validation/{serviceType}/document/close/{txtIntellidactId.Text}",
+                            $"https://{serverUrl}/api/validation/{serviceType}/document/close/{txtIntellidactId.Text}",
                             "POST", new byte[0]);
                     WebHeaderCollection myWebHeaderCollection = client.ResponseHeaders;
                     var header = myWebHeaderCollection == null ? null : myWebHeaderCollection["x-validation-status"];
@@ -280,8 +280,8 @@ namespace CefBrowserTool
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     client.Headers.Add("api_key", apiKeyTextBox.Text);
-                    textBoxResponse.Text = $"http://{serverUrl}/api/Batch/Status?" + batchIdUrl;
-                    var json = client.DownloadString($"http://{serverUrl}/api/Batch/Status?" + batchIdUrl);
+                    textBoxResponse.Text = $"https://{serverUrl}/api/Batch/Status?" + batchIdUrl;
+                    var json = client.DownloadString($"https://{serverUrl}/api/Batch/Status?" + batchIdUrl);
 
                     //json = 
                     JArray jsonArray = JArray.Parse(json);
@@ -361,7 +361,7 @@ namespace CefBrowserTool
             //server = string.IsNullOrWhiteSpace()
             var service = indexingRadioButton.Checked ? "indexing" : "redaction";
             var port = indexingRadioButton.Checked ? "8030" : "8060";
-            var url = $"http://{appServer}:{port}/" + service + "/document/" + txtIntellidactId.Text;
+            var url = $"https://{appServer}:{port}/" + service + "/document/" + txtIntellidactId.Text;
             textBoxResponse.Text = url;
             chromeBrowser.Load(url);
             buttonLoad.Enabled = false;
@@ -437,7 +437,7 @@ namespace CefBrowserTool
             var port = "8030";
             var appServer = parseServerName(textBoxServer.Text);
 
-            var appBaseUrl = $"http://{appServer}:{port}/" + serviceType + "/document";
+            var appBaseUrl = $"https://{appServer}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
 
@@ -455,11 +455,11 @@ namespace CefBrowserTool
                     // make close document web api call to release document lock
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     textBoxResponse.Text =
-                        $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+                        $"https://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
 
                     var response =
                         client.UploadData(
-                            $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}",
+                            $"https://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}",
                             "POST", new byte[0]);
                     textBoxResponse.Text += BytesToStringConverted(response);
                 }
@@ -501,7 +501,7 @@ namespace CefBrowserTool
             var appServer = parseServerName(textBoxServer.Text);
             var isLocahost = string.Equals(server, "localhost", StringComparison.OrdinalIgnoreCase);
             var serverUrl = isLocahost ? server + ":23760" : server + ":8037";
-            var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
+            var appBaseUrl = $"https://{server}:{port}/" + serviceType + "/document";
             // set useCredentials to be true, will pass windows credentials for web api verification
 
             IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
@@ -519,10 +519,10 @@ namespace CefBrowserTool
                     client.Headers.Add(HttpRequestHeader.ContentType, "application/json; charset=utf-8");
                     var response =
                         client.UploadData(
-                            $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}",
+                            $"https://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}",
                             "POST", new byte[0]);
                     textBoxResponse.Text =
-                        $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+                        $"https://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
                     textBoxResponse.Text += BytesToStringConverted(response);
                 }
                 catch (WebException exception)
@@ -538,7 +538,7 @@ namespace CefBrowserTool
                         }
                     }
                     textBoxResponse.Text =
-                        $"http://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
+                        $"https://{serverUrl}/api/validation/{serviceType}/batch/close/{batchIDTextBox.Text}";
                     textBoxResponse.Text += $"Failed to close batch in redaction module, " + responseText;
                 }
             }
@@ -653,7 +653,7 @@ namespace CefBrowserTool
                 var serviceType = indexingRadioButton.Checked ? "indexing" : "redaction";
                 var port = indexingRadioButton.Checked ? "8030" : "8060";
 
-                var appBaseUrl = $"http://{server}:{port}/" + serviceType + "/document";
+                var appBaseUrl = $"https://{server}:{port}/" + serviceType + "/document";
                 // set useCredentials to be true, will pass windows credentials for web api verification
                 IWebProxy defaultWebProxy = WebRequest.DefaultWebProxy;
                 defaultWebProxy.Credentials = CredentialCache.DefaultCredentials;
@@ -678,18 +678,18 @@ namespace CefBrowserTool
 
                         //var response =
                         //    client.UploadData(
-                        //        $"http://{serverUrl}/api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
+                        //        $"https://{serverUrl}/api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
                         //        "POST", new byte[0]);
                         var response =
                             client.UploadString(
-                                $"http://{serverUrl}/api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
+                                $"https://{serverUrl}/api/Document/RebuildCoverPages/{txtIntellidactId.Text}",
                                 "POST", json);
                         //var response =
                         //    client.UploadFile(
-                        //        $"http://{serverUrl}/api/document/rebuildCoverPages/{txtIntellidactId.Text}", "POST",
+                        //        $"https://{serverUrl}/api/document/rebuildCoverPages/{txtIntellidactId.Text}", "POST",
                         //        dlg.FileName);
                         textBoxResponse.Text =
-                            $"http://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
+                            $"https://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
                         textBoxResponse.Text += response;
                     }
                     catch (WebException exception)
@@ -705,7 +705,7 @@ namespace CefBrowserTool
                             }
                         }
                         textBoxResponse.Text =
-                            $"http://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
+                            $"https://{serverUrl}/api/document/rebuildcoverpages/{txtIntellidactId.Text}";
                         textBoxResponse.Text += $"Failed to rebuild cover pages, " + responseText;
                     }
                 }
